@@ -1,0 +1,367 @@
+Create table course(
+course_no varchar(20),
+course_name varchar(50),
+year_semister number(3),
+credit number(20,4),
+dept_id number(20),
+primary key(course_no),
+foreign key(dept_id) references dept(dept_id)
+);
+
+
+insert into dept(dept_id,dept_name,faculty,no_of_student)values(3,'EEE','EE',120);
+
+select * from dept where no_of_student=120;
+select * from dept where dept_id=(select dept_id from course where course_name='database systems')
+
+;
+update course set course_name='Digital Electronics' where course_no='EEE1101';
+
+insert into dept(dept_id,dept_name,faculty,no_of_student)values(12,'URP','CE',60);
+
+delete from  dept where dept_id=12;
+
+
+
+
+CREATE OR REPLACE PROCEDURE proc_insert_health_record(
+  p_petID IN NUMBER,
+  p_age IN NUMBER,
+  p_weight IN NUMBER,
+  p_health_status IN VARCHAR2,
+  p_food_habit IN VARCHAR2,
+  p_last_checkup_date IN DATE,
+  p_notes IN VARCHAR2
+)
+AS
+BEGIN
+  INSERT INTO Health_Records (RecordID, PetID, Age, Weight, HealthStatus, Food_Habit, LastCheckupDate, Notes)
+  VALUES (Health_Records_SEQ.NEXTVAL, p_petID, p_age, p_weight, p_health_status, p_food_habit, p_last_checkup_date, p_notes);
+  
+  DBMS_OUTPUT.PUT_LINE('Health record inserted successfully for PetID: ' || p_petID);
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error inserting health record: ' || SQLERRM);
+END;
+/
+DECLARE
+  v_petID NUMBER := 1;
+  v_age NUMBER(10,2) := 5.5;
+  v_weight NUMBER(10,2) := 10.2;
+  v_health_status VARCHAR2(255) := 'Healthy';
+  v_food_habit VARCHAR2(255) := 'Regular diet';
+  v_last_checkup_date DATE := SYSDATE;
+  v_notes VARCHAR2(1000) := 'No special notes';
+BEGIN
+  proc_insert_health_record(v_petID, v_age, v_weight, v_health_status, v_food_habit, v_last_checkup_date, v_notes);
+END;
+/
+
+
+CREATE TABLE my_table (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    age INTEGER CHECK (age >= 18)
+);
+CREATE TABLE my_table2 (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    age INTEGER CHECK (age >= 18 AND age <= 120),
+    status VARCHAR(10) CHECK (status IN ('active', 'inactive', 'pending')),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    CONSTRAINT check_age_status CHECK (
+        (status = 'active' AND age >= 18 AND age <= 65) OR
+        (status = 'inactive' AND age >= 18 AND age <= 120) OR
+        (status = 'pending' AND age >= 18 AND age <= 100) OR
+        (end_date > start_date)
+    )
+);
+SELECT * FROM TEST WHERE NAME LIKE 'E%';
+
+
+select * from book where book_no> some(select book_no from book where book_no>=14);
+select * from book where book_no> all(select book_no from book where book_no>=14);
+
+select * from course where year_semister>=11 and exists(select * from dept where faculty like '%EE%');
+
+select * from dept where faculty='EE' and dept_id in (select dept_id from course where course_no like '%CSE%')
+
+select faculty,avg(no_of_student) from dept group by faculty having avg(no_of_student)>60;
+
+
+CREATE TABLE my_table (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    age INTEGER CHECK (age >= 18)
+);
+CREATE TABLE my_table2 (
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    age INTEGER CHECK (age >= 18 AND age <= 120),
+    status VARCHAR(10) CHECK (status IN ('active', 'inactive', 'pending')),
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    CONSTRAINT check_age_status CHECK (
+        (status = 'active' AND age >= 18 AND age <= 65) OR
+        (status = 'inactive' AND age >= 18 AND age <= 120) OR
+        (status = 'pending' AND age >= 18 AND age <= 100) OR
+        (end_date > start_date)
+    )
+);
+
+
+select max(no_of_student) from dept;
+select min(no_of_student) from dept;
+
+
+CREATE OR REPLACE FUNCTION fun(var1 IN VARCHAR) RETURN VARCHAR2
+AS
+  value dept.dept_name%TYPE;
+BEGIN
+  SELECT dept_name INTO value FROM dept WHERE dept_id = var1;
+  RETURN value;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    RETURN NULL;
+  WHEN OTHERS THEN
+    RETURN NULL; -- Or handle the error appropriately
+END;
+/
+
+
+CREATE OR REPLACE PROCEDURE proc_update_health_record(
+  p_recordID IN NUMBER,
+  p_age IN NUMBER,
+  p_weight IN NUMBER,
+  p_health_status IN VARCHAR2,
+  p_food_habit IN VARCHAR2,
+  p_last_checkup_date IN DATE,
+  p_notes IN VARCHAR2
+)
+AS
+BEGIN
+  UPDATE Health_Records
+  SET Age = p_age,
+      Weight = p_weight,
+      HealthStatus = p_health_status,
+      Food_Habit = p_food_habit,
+      LastCheckupDate = p_last_checkup_date,
+      Notes = p_notes
+  WHERE RecordID = p_recordID;
+  
+  DBMS_OUTPUT.PUT_LINE('Health record updated successfully for RecordID: ' || p_recordID);
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error updating health record: ' || SQLERRM);
+END;
+/
+
+CREATE OR REPLACE PROCEDURE proc_insert_health_record(
+  p_petID IN NUMBER,
+  p_age IN NUMBER,
+  p_weight IN NUMBER,
+  p_health_status IN VARCHAR2,
+  p_food_habit IN VARCHAR2,
+  p_last_checkup_date IN DATE,
+  p_notes IN VARCHAR2
+)
+AS
+BEGIN
+  INSERT INTO Health_Records (RecordID, PetID, Age, Weight, HealthStatus, Food_Habit, LastCheckupDate, Notes)
+  VALUES (Health_Records_SEQ.NEXTVAL, p_petID, p_age, p_weight, p_health_status, p_food_habit, p_last_checkup_date, p_notes);
+  
+  DBMS_OUTPUT.PUT_LINE('Health record inserted successfully for PetID: ' || p_petID);
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error inserting health record: ' || SQLERRM);
+END;
+/
+
+CREATE OR REPLACE PROCEDURE proc_delete_health_record(
+  p_recordID IN NUMBER
+)
+AS
+BEGIN
+  DELETE FROM Health_Records WHERE RecordID = p_recordID;
+  
+  DBMS_OUTPUT.PUT_LINE('Health record deleted successfully for RecordID: ' || p_recordID);
+EXCEPTION
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error deleting health record: ' || SQLERRM);
+END;
+/
+
+
+
+
+
+CREATE OR REPLACE FUNCTION check_pet_availability(p_petID IN NUMBER) RETURN VARCHAR2
+AS
+  v_available CHAR(1);
+BEGIN
+  SELECT Available INTO v_available
+  FROM Pets
+  WHERE PetID = p_petID;
+  
+  IF v_available = 'Y' THEN
+    RETURN 'Available';
+  ELSE
+    RETURN 'Not Available';
+  END IF;
+
+END;
+/
+
+
+
+CREATE OR REPLACE TRIGGER trg_update_pet_availability
+AFTER INSERT ON Orders
+FOR EACH ROW
+BEGIN
+  IF :NEW.PetID IS NOT NULL THEN
+    UPDATE Pets
+    SET Available = 'N'
+    WHERE PetID = :NEW.PetID;
+    
+    DBMS_OUTPUT.PUT_LINE('Pet availability updated for PetID: ' || :NEW.PetID);
+  END IF;
+END;
+/
+
+
+
+CREATE OR REPLACE PROCEDURE proc_update_pet_availability(
+  p_petID IN NUMBER
+)
+AS
+BEGIN
+  UPDATE Pets
+  SET Available = 'N'
+  WHERE PetID = p_petID;
+  
+  DBMS_OUTPUT.PUT_LINE('Pet availability updated for PetID: ' || p_petID);
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    DBMS_OUTPUT.PUT_LINE('Pet with PetID ' || p_petID || ' not found.');
+  WHEN OTHERS THEN
+    DBMS_OUTPUT.PUT_LINE('Error updating pet availability: ' || SQLERRM);
+END;
+/
+
+
+set serveroutput on
+declare 
+dept_id dept.dept_id%type;
+dept_name DEPT.DEPT_NAME%type;
+no_of_student number;
+begin
+select dept_id,dept_name,no_of_student into dept_id,dept_name,no_of_student from dept where dept_id=7;
+dbms_output.put_line('DEPT_id: '||dept_id|| ' DEPT_name: '||dept_name || ' no_of_student: '||no_of_student);
+end;
+/
+
+
+set serveroutput on
+declare 
+dept_id dept.dept_id%type:=9;
+dept_name DEPT.DEPT_NAME%type:='MME';
+faculty dept.faculty%type:='ME';
+no_of_student number:=30;
+begin
+insert into dept values(dept_id,dept_name,faculty,no_of_student);
+end;
+/
+
+set serveroutput on
+declare 
+cursor dept_cursor is select * from dept;
+dept_row dept%rowtype;
+begin
+open dept_cursor;
+fetch dept_cursor into dept_row.dept_id,dept_row.dept_name,dept_row.faculty,dept_row.no_of_student;
+while dept_cursor%found loop
+dbms_output.put_line('DEPT_id: '||dept_row.dept_id|| ' DEPT_name: '||dept_row.dept_name || ' faculty: ' ||dept_row.faculty|| ' no_of_student: '||dept_row.no_of_student);
+dbms_output.put_line('Row count: '|| dept_cursor%rowcount);
+fetch dept_cursor into dept_row.dept_id,dept_row.dept_name,dept_row.faculty,dept_row.no_of_student;
+end loop;
+close dept_cursor;
+end;
+/
+
+
+set serveroutput on
+declare 
+  counter number;
+  book_name2 book.book_name%type;
+  TYPE NAMEARRAY IS VARRAY(5) OF book.book_name%type; 
+  A_NAME NAMEARRAY:=NAMEARRAY();
+begin
+  counter:=1;
+  for x in 12..16  
+  loop
+    select book_name into book_name2 from book where book_no=x;
+    A_NAME.EXTEND();
+    A_NAME(counter):=book_name2;
+    counter:=counter+1;
+  end loop;
+  counter:=1;
+  WHILE counter<=A_NAME.COUNT 
+    LOOP 
+    DBMS_OUTPUT.PUT_LINE(A_NAME(counter)); 
+    counter:=counter+1;
+  END LOOP;
+end;
+/
+
+
+DECLARE 
+   counter NUMBER := 1;
+   book_name2 book.book_name%TYPE;
+   TYPE NAMEARRAY IS VARRAY(5) OF book.book_name%TYPE;
+   A_NAME NAMEARRAY:=NAMEARRAY('Book 1', 'Book 2', 'Book 3', 'Book 4', 'Book 5'); 
+   -- VARRAY with a fixed size of 5 elements and initialized with book names
+BEGIN
+   counter := 1;
+   FOR x IN 12..16  
+   LOOP
+      SELECT book_name INTO book_name2 FROM book WHERE book_no=x;
+      A_NAME(counter) := book_name2;
+      counter := counter + 1;
+   END LOOP;
+   counter := 1;
+   WHILE counter <= A_NAME.COUNT 
+   LOOP 
+      DBMS_OUTPUT.PUT_LINE(A_NAME(counter)); 
+      counter := counter + 1;
+   END LOOP;
+END;
+
+
+
+DECLARE 
+   counter NUMBER := 1;
+   book_name2 book.book_name%TYPE;
+   TYPE NAMEARRAY IS VARRAY(5) OF book.book_name%TYPE;
+   A_NAME NAMEARRAY:=NAMEARRAY('Book 1', 'Book 2', 'Book 3', 'Book 4', 'Book 5'); 
+   -- VARRAY with a fixed size of 5 elements and initialized with book names
+BEGIN
+   counter := 1;
+   FOR x IN 12..16  
+   LOOP
+      SELECT book_name INTO book_name2 FROM book WHERE book_no=x;
+      if book_name2='discreate math' 
+        then
+        dbms_output.put_line(book_name2||' is a '||'CSE course');
+      elsif book_name2='electrical engineering'  
+        then
+        dbms_output.put_line(book_name2||' is a '||'EEE course');
+      else 
+        dbms_output.put_line(book_name2||' is a '||'other dept course');
+        end if;
+   END LOOP;
+END;
